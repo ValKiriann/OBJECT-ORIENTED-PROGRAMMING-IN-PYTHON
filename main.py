@@ -51,21 +51,28 @@ while game:
     elif command == "talk":
         if inhabitant is not None:
             inhabitant.talk()
-        else: print("Nobody is here")
+        else:
+            print("Nobody is here")
     elif command == "fight":
-        if inhabitant == None or isinstance(inhabitant, Friend):
+        if inhabitant is None or isinstance(inhabitant, Friend):
             print("There is no one here to fight with")
         else:
-            print("Choose a weapon")
-            item = input()
-            if inhabitant.fight(item) == True:
-                print("Hooray, you won the fight!")
-                current_room.set_character(None)
+            if not backpack:
+                print("You dont have anything in your backpack")
             else:
-                # What happens if you lose?
-                print("Oh dear, you lost the fight.")
-                print("That's the end of the game")
-                game = False
+                item = ""
+                while item.capitalize() not in backpack:
+                    print("Choose an item in your backpack")
+                    print("Things in your backpack: " + ', '.join(backpack))
+                    item = input()
+                if inhabitant.fight(item.capitalize()):
+                    print("Hooray, you won the fight!")
+                    current_room.set_character(None)
+                else:
+                    # What happens if you lose?
+                    print("Oh dear, you lost the fight.")
+                    print("That's the end of the game")
+                    game = False
     elif command == "hug":
         if inhabitant == None:
             print("There is no one here to hug :(")
@@ -79,5 +86,9 @@ while game:
         game = False
 
     elif command == "take":
-        print("See you soon!")
-        game = False
+        if item is not None:
+            backpack.append(item.name)
+            print("You take " + item.name + " and put it into your backpack")
+            current_room.set_item(None)
+        else:
+            print("There's nothing to take from this room")
